@@ -13,10 +13,12 @@ const RARITY_ORDER = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
 /* ─────────── sprite assets ─────────── */
 const SPRITE_MANIFEST = {
     'fish_bumblegill': 'assets/sprites/fish/bumblegill.png',
-    'fish_emerald_trout': 'assets/sprites/fish/emerald_trout.png',
+    'fish_pebble_minnow': 'assets/sprites/fish/pebble_minnow.png',
+    'fish_clover_carp': 'assets/sprites/fish/clover_carp.png',
     'fish_dawn_perch': 'assets/sprites/fish/dawn_perch.png',
-    'env_tree': 'assets/sprites/environment/tree_meadow.png',
+    'env_tree': 'assets/sprites/environment/latesttree.png',
     'env_clouds': 'assets/sprites/environment/clouds.png',
+    'env_hills': 'assets/sprites/environment/hills.png',
 };
 
 /* ─────────── environment sprites ─────────── */
@@ -26,7 +28,7 @@ const ENV_SPRITES = {
         key: 'env_tree',
         frameW: 64,   // ← one frame's width  (sheet width ÷ frames)
         frameH: 80,   // ← one frame's height
-        frames: 2,
+        frames: 4,
         fps: 2,       // sway speed (lower = slower)
         worldH: 56    // how tall to draw it in the scene (adjust to taste)
     },
@@ -36,16 +38,26 @@ const ENV_SPRITES = {
         frameW: 48,   // ← one cloud's width  (sheet width ÷ frames)
         frameH: 24,   // ← one cloud's height
         frames: 3
+    },
+    hills: {
+        key: 'env_hills',
+        frameW: 640,    // image width
+        frameH: 58,    // ← your CROPPED image height
+        frames: 1,
+        worldH: 110,    // on-screen height. ~frameH = no distortion; lower = shorter hills / more sky
+        treeBase: 12    // tree bases sit this many px above the waterline
     }
 };
 
 const SPECIES_SPRITES = {
     'Bumblegill': 'fish_bumblegill',
-    'Emerald Trout': 'fish_emerald_trout',
+    'Pebble Minnow': 'fish_pebble_minnow',
+    'Clover Carp': 'fish_clover_carp',
     'Dawn Perch': 'fish_dawn_perch',
+    // ...your other waters
 };
 
-const SPRITE_DEFAULTS = { frameW: 32, frameH: 32, frames: 3, fps: 8 };
+const SPRITE_DEFAULTS = { frameW: 32, frameH: 32, frames: 6, fps: 8 };
 const SCORE_RARITY = { common: 1, uncommon: 1.4, rare: 2, epic: 3, legendary: 5 };
 
 /* ─────────── playable characters (each with a signature superpower) ─────────── */

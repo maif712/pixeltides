@@ -466,30 +466,49 @@ class Fishing {
     hillNear(px) { return this.waterline - (10 + 22 * Math.sin(px * .006 + 4.2) + 12 * Math.sin(px * .017 + 1)); }
     drawBackdrop(x) {
         const W = this.W, th = this.theme;
-        x.fillStyle = th.hills[0]; x.beginPath(); x.moveTo(-10, this.waterline + 4);
-        for (let i = -10; i <= W + 10; i += 20) x.lineTo(i, this.hillFar(i));
-        x.lineTo(W + 10, this.waterline + 4); x.closePath(); x.fill();
-        x.fillStyle = th.hills[1]; x.beginPath(); x.moveTo(-10, this.waterline + 6);
-        for (let i = -10; i <= W + 10; i += 20) x.lineTo(i, this.hillNear(i));
-        x.lineTo(W + 10, this.waterline + 6); x.closePath(); x.fill();
+        const hs = ENV_SPRITES.hills;
+        const useHills = hs && Assets.has(hs.key) && th.name === 'Meadow Pond';
+
+        // ── Hills ──
+        if (useHills) {
+            const img = Assets.get(hs.key);
+            const hillsH = hs.worldH;                 // controlled height, not the image's
+            const baseY = this.waterline + 2;         // hills base sits on the waterline
+            x.save();
+            x.imageSmoothingEnabled = false;
+            x.drawImage(img, 0, 0, hs.frameW, hs.frameH, 0, baseY - hillsH, W, hillsH);
+            x.restore();
+        } else {
+            x.fillStyle = th.hills[0]; x.beginPath(); x.moveTo(-10, this.waterline + 4);
+            for (let i = -10; i <= W + 10; i += 20) x.lineTo(i, this.hillFar(i));
+            x.lineTo(W + 10, this.waterline + 4); x.closePath(); x.fill();
+            x.fillStyle = th.hills[1]; x.beginPath(); x.moveTo(-10, this.waterline + 6);
+            for (let i = -10; i <= W + 10; i += 20) x.lineTo(i, this.hillNear(i));
+            x.lineTo(W + 10, this.waterline + 6); x.closePath(); x.fill();
+        }
+
+        // ── Trees ──
         if (th.trees) {
             const ts = ENV_SPRITES.tree;
             if (ts && Assets.has(ts.key)) {
                 const img = Assets.get(ts.key);
-                const tw = ts.worldH * (ts.frameW / ts.frameH); // keep aspect ratio
+                const tw = ts.worldH * (ts.frameW / ts.frameH);
                 const thh = ts.worldH;
                 x.save();
                 x.imageSmoothingEnabled = false;
                 for (const fx of [.08, .16, .55, .86]) {
-                    const px = fx * W, py = this.hillNear(px) + 2;
-                    // fx*7 offsets the sway so trees don't move in perfect sync
+                    const px = fx * W;
+                    // On the pixel-art hills: fixed baseline near the water (+ tiny variation).
+                    // On procedural hills: follow the hillNear curve.
+                    const py = useHills
+                        ? this.waterline - hs.treeBase + Math.sin(fx * 26) * 3
+                        : this.hillNear(px) + 2;
                     const frame = Math.floor((this.t + fx * 7) * ts.fps) % ts.frames;
                     const sx = frame * ts.frameW;
                     x.drawImage(img, sx, 0, ts.frameW, ts.frameH, px - tw / 2, py - thh, tw, thh);
                 }
                 x.restore();
             } else {
-                // procedural fallback
                 x.fillStyle = 'rgba(0,0,0,.28)';
                 for (const fx of [.08, .16, .55, .86]) {
                     const px = fx * W, py = this.hillNear(px) + 2;
@@ -498,6 +517,8 @@ class Fishing {
                 }
             }
         }
+
+        // ── Grotto stalactites ──
         if (th.special === 'grotto') {
             x.fillStyle = '#04211e';
             for (const fx of [.1, .3, .52, .72, .9]) {
