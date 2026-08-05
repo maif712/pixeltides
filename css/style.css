@@ -1405,6 +1405,50 @@ body {
     letter-spacing: .05em;
 }
 
+
+/* ─────────── board loading state ─────────── */
+.board-content {
+    position: relative;
+    min-height: 220px;
+    /* keeps space for the loader while content is empty */
+}
+
+.board-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 10px;
+    z-index: 5;
+}
+
+.board-loading span {
+    font-family: 'Pixelify Sans';
+    font-size: 14px;
+    color: #ffe9b3;
+    letter-spacing: .05em;
+    text-shadow: 1px 2px 0 rgba(0, 0, 0, .5);
+}
+
+.spinner {
+    width: 34px;
+    height: 34px;
+    border: 4px solid rgba(255, 207, 92, 0.25);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* ─────────── responsive breakpoints ─────────── */
 
 /* Small phones (≤400px) */
