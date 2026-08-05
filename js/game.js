@@ -418,30 +418,45 @@ const Game = {
 
     /* ---------- leaderboard & aquarium screens ---------- */
     async renderBoard() {
-        const today = new Date().toISOString().slice(0, 10);
-        const best = await DB.getDailyScore(today);
-        U.el('daily-box').innerHTML = `
-      <div class="daily-card">
-        <b>🎲 DAILY CATCH — ${today}</b>
-        <span>${best ? `Today's best: ⭐ ${best.toLocaleString()}` : 'Not attempted yet — same seeded waters for everyone. Go set the bar!'}</span>
-      </div>`;
-
         const list = U.el('board-list');
-        const entries = await DB.getLeaderboard(100);
+        const loading = U.el('board-loading');
 
-        if (!entries.length) {
-            list.innerHTML = '<div class="board-empty">No voyages recorded yet. Set sail!</div>';
-            return;
+        // Show loading, clear previous content
+        loading.classList.remove('hidden');
+        U.el('daily-box').innerHTML = '';
+        list.innerHTML = '';
+
+        try {
+            const today = new Date().toISOString().slice(0, 10);
+            const [best, entries] = await Promise.all([
+                DB.getDailyScore(today),
+                DB.getLeaderboard(100)
+            ]);
+
+            U.el('daily-box').innerHTML = `
+          <div class="daily-card">
+            <b>🎲 DAILY CATCH — ${today}</b>
+            <span>${best ? `Today's best: ⭐ ${best.toLocaleString()}` : 'Not attempted yet — same seeded waters for everyone. Go set the bar!'}</span>
+          </div>`;
+
+            if (!entries.length) {
+                list.innerHTML = '<div class="board-empty">No voyages recorded yet. Set sail!</div>';
+            } else {
+                list.innerHTML = entries.map((e, i) => `
+              <li class="${i === 0 ? 'top1' : ''}">
+                <span class="b-rank">#${i + 1}</span>
+                <span class="b-username" title="${e.username}">${this.shortEmail(e.username)}</span>
+                <span class="b-score">⭐ ${e.score.toLocaleString()}</span>
+                <span class="b-char" title="${e.character}">${e.character.split(' ')[0]}</span>
+                <span class="b-mode">${e.mode === 'daily' ? '🎲' : '⛵'} ${e.date.slice(5)}</span>
+              </li>`).join('');
+            }
+        } catch (err) {
+            console.error('Failed to load ranks:', err);
+            list.innerHTML = '<div class="board-empty">Could not load ranks. Please try again.</div>';
+        } finally {
+            loading.classList.add('hidden');
         }
-
-        list.innerHTML = entries.map((e, i) => `
-      <li class="${i === 0 ? 'top1' : ''}">
-        <span class="b-rank">#${i + 1}</span>
-        <span class="b-username" title="${e.username}">${this.shortEmail(e.username)}</span>
-        <span class="b-score">⭐ ${e.score.toLocaleString()}</span>
-        <span class="b-char" title="${e.character}">${e.character.split(' ')[0]}</span>
-        <span class="b-mode">${e.mode === 'daily' ? '🎲' : '⛵'} ${e.date.slice(5)}</span>
-      </li>`).join('');
     },
 
     // Helper to truncate long emails for the leaderboard display
@@ -486,7 +501,7 @@ const Game = {
         U.el('btn-daily').onclick = () => this.startRun(true);
         U.el('btn-shop').onclick = () => { AudioSys.sfx('click'); Shop.render(); this.show('screen-shop'); };
         U.el('btn-aquarium').onclick = () => { AudioSys.sfx('click'); this.renderAquarium(); this.show('screen-aquarium'); };
-        U.el('btn-board').onclick = () => { AudioSys.sfx('click'); this.renderBoard(); this.show('screen-board'); };
+        U.el('btn-board').onclick = () => { AudioSys.sfx('click'); this.show('screen-board'); this.renderBoard(); };
         U.el('btn-howto').onclick = () => { AudioSys.sfx('click'); this.show('screen-howto'); };
         U.el('shop-back').onclick = () => { AudioSys.sfx('click'); Shop.renderTitle(); this.show('screen-title'); };
         U.el('aq-back').onclick = () => { AudioSys.sfx('click'); Shop.renderTitle(); this.show('screen-title'); };

@@ -138,9 +138,15 @@
                 <header class="panel-head">
                     <h2>🏆 Ranks</h2><button class="btn btn-small" id="board-back">← BACK</button>
                 </header>
-                <div id="daily-box"></div>
-                <h3 class="board-h">ALL-TIME TOP 10</h3>
-                <ol id="board-list" class="board-list"></ol>
+                <div class="board-content">
+                    <div id="daily-box"></div>
+                    <h3 class="board-h">ALL-TIME TOP 10</h3>
+                    <ol id="board-list" class="board-list"></ol>
+                    <div class="board-loading hidden" id="board-loading">
+                        <div class="spinner"></div>
+                        <span>Loading ranks…</span>
+                    </div>
+                </div>
             </div>
         </section>
 
