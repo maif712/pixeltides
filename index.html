@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXELTIDES — Angler's Legacy</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎣</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="stage">
+        <canvas id="scene"></canvas>
+        <div id="toast"></div>
+
+        <!-- ══════════ LOADING ══════════ -->
+        <div id="screen-loading">
+            <div class="loading-box">
+                <h1 class="loading-logo"><span class="t-cream">PIXEL</span><span class="t-aqua">TIDES</span></h1>
+                <div class="loading-bobber">🎣</div>
+                <div class="loading-bar">
+                    <div class="loading-fill" id="loading-fill"></div>
+                </div>
+                <p class="loading-status" id="loading-status">Connecting…</p>
+            </div>
+        </div>
+
+        <!-- ══════════ LOGIN / SIGNUP ══════════ -->
+        <section id="screen-auth" class="screen hidden">
+            <div class="auth-panel">
+                <h1 class="auth-logo"><span class="t-cream">PIXEL</span><span class="t-aqua">TIDES</span></h1>
+                <p class="auth-sub">Sign in to save your catches and climb the leaderboard</p>
+
+                <div class="auth-tabs">
+                    <button id="auth-tab-signin" class="auth-tab active">Sign In</button>
+                    <button id="auth-tab-signup" class="auth-tab">Sign Up</button>
+                </div>
+
+                <div class="auth-form">
+                    <input type="email" id="auth-email" class="auth-input" placeholder="Email" autocomplete="email">
+                    <input type="password" id="auth-password" class="auth-input" placeholder="Password"
+                        autocomplete="current-password">
+                    <div id="auth-message" class="auth-message"></div>
+                    <button id="auth-submit" class="btn btn-big">SIGN IN</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ HUD ══════════ -->
+        <div id="hud" class="hidden">
+            <div class="hud-col hud-tl">
+                <div class="hud-chip" id="hud-round">Round 1/10</div>
+                <div class="hud-chip" id="hud-quota">🐟 0/3</div>
+                <div class="hud-chip" id="hud-bait">🪱🪱🪱🪱</div>
+                <div class="hud-chip gold" id="hud-score">⭐ 0</div>
+                <div class="hud-chip combo" id="hud-combo">🔥 ×1.00</div>
+            </div>
+            <div class="hud-col hud-tr">
+                <div class="hud-col hud-tr">
+                    <div class="hud-chip user" id="hud-username">👤 —</div> <!-- ← new -->
+                    <div class="hud-chip gold" id="hud-coins">🪙 0</div>
+                    <div class="hud-chip" id="hud-char">🎣 Angler</div>
+                </div>
+            </div>
+            <div id="hud-buffs"></div>
+            <button id="hud-power" title="Superpower — Right-click or F"><span class="core"
+                    id="hud-power-ico">⚡</span></button>
+            <button id="hud-pause" class="hud-chip" title="Pause (Esc)">⏸</button>
+        </div>
+
+        <!-- ══════════ TITLE ══════════ -->
+        <section id="screen-title" class="screen hidden">
+            <div class="title-wrap">
+                <div class="title-badge">🌊 10 WATERS · 20 BLESSINGS · 1 LEVIATHAN</div>
+                <h1 class="game-title">
+                    <span class="word t-cream split">PIXEL</span><span class="word t-aqua split">TIDES</span>
+                </h1>
+                <p class="tagline">Cast. Catch. Ascend. — a cozy roguelite fishing tale</p>
+                <div class="menu">
+                    <button id="btn-play" class="btn btn-big">▶ &nbsp;SET SAIL</button>
+                    <button id="btn-daily" class="btn btn-big btn-aqua">🎲 DAILY CATCH</button>
+                    <div class="row">
+                        <button id="btn-shop" class="btn btn-wood grow">🎒 SHOP</button>
+                        <button id="btn-aquarium" class="btn btn-wood grow">🐠 AQUARIUM</button>
+                    </div>
+                    <div class="row">
+                        <button id="btn-board" class="btn btn-wood grow">🏆 RANKS</button>
+                        <button id="btn-howto" class="btn btn-wood grow">❓ HOW TO</button>
+                        <button id="btn-sound" class="btn btn-wood btn-sq" title="Toggle sound">🔊</button>
+                    </div>
+                </div>
+                <div class="save-plaque">
+                    <span id="title-username">👤 —</span>
+                    <span id="title-wallet">🪙 0</span>
+                    <span id="title-best"></span>
+                    <button id="btn-logout" class="btn btn-small btn-wood" title="Sign out">⏻ LOGOUT</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ SHOP ══════════ -->
+        <section id="screen-shop" class="screen hidden">
+            <div class="panel shop-panel">
+                <header class="panel-head">
+                    <h2>🎒 Angler's Shop</h2>
+                    <div class="wallet" id="shop-wallet">🪙 0</div>
+                    <button class="btn btn-small" id="shop-back">← BACK</button>
+                </header>
+                <p class="shop-hint">Every angler wields a unique <b>superpower</b>. Coins are banked at the end of
+                    every run.</p>
+                <div id="char-grid" class="char-grid"></div>
+            </div>
+        </section>
+
+        <!-- ══════════ AQUARIUM ══════════ -->
+        <section id="screen-aquarium" class="screen hidden">
+            <div class="panel aquarium-panel">
+                <header class="panel-head">
+                    <h2>🐠 The Aquarium</h2>
+                    <div class="wallet" id="aq-pct">0%</div>
+                    <button class="btn btn-small" id="aq-back">← BACK</button>
+                </header>
+                <p class="shop-hint">Every species you land is preserved here forever. Complete the collection!</p>
+                <div id="aq-groups"></div>
+            </div>
+        </section>
+
+        <!-- ══════════ LEADERBOARD ══════════ -->
+        <section id="screen-board" class="screen hidden">
+            <div class="panel">
+                <header class="panel-head">
+                    <h2>🏆 Ranks</h2><button class="btn btn-small" id="board-back">← BACK</button>
+                </header>
+                <div id="daily-box"></div>
+                <h3 class="board-h">ALL-TIME TOP 10</h3>
+                <ol id="board-list" class="board-list"></ol>
+            </div>
+        </section>
+
+        <!-- ══════════ HOW TO ══════════ -->
+        <section id="screen-howto" class="screen hidden">
+            <div class="panel">
+                <header class="panel-head">
+                    <h2>❓ How to Fish</h2><button class="btn btn-small" id="howto-back">← BACK</button>
+                </header>
+                <div class="how-row"><span class="how-ico">🖱️</span>
+                    <p><b>Click the water</b> to cast. When the bobber plunges, <b>click fast</b> to hook.</p>
+                </div>
+                <div class="how-row"><span class="how-ico">⬆️</span>
+                    <p><b>Hold left mouse</b> to raise the reel bar, <b>release</b> to sink. Keep the fish inside — the
+                        gauge fills while covered, drains while not.</p>
+                </div>
+                <div class="how-row"><span class="how-ico">⚡</span>
+                    <p><b>Superpower</b>: keeping the fish in your bar charges the round gauge at the bottom. When full,
+                        click it, <b>right-click</b>, or press <b>F</b>. Every character has a unique power.</p>
+                </div>
+                <div class="how-row"><span class="how-ico">🔥</span>
+                    <p><b>Combo</b>: consecutive PERFECT catches multiply your ⭐ score up to ×3. Fast rounds earn 🥇🥈🥉
+                        medals. Try the <b>Daily Catch</b> — same seeded waters for everyone, leaderboard glory.</p>
+                </div>
+                <div class="how-row"><span class="how-ico">⚡</span>
+                    <p>After <b>every catch</b> the tide offers 3 blessings, Common → Legendary. Build your run.</p>
+                </div>
+                <div class="how-row"><span class="how-ico">🪱</span>
+                    <p>An escaped fish costs <b>1 worm</b>. Run out and the run ends. Survive all 10 waters and land the
+                        Leviathan.</p>
+                </div>
+                <div class="rarity-legend">
+                    <span class="pill r-common">Common</span>
+                    <span class="pill r-uncommon">Uncommon</span>
+                    <span class="pill r-rare">Rare</span>
+                    <span class="pill r-epic">Epic</span>
+                    <span class="pill r-legendary">Legendary</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ ROUND INTRO ══════════ -->
+        <section id="screen-intro" class="screen hidden">
+            <div class="round-card" id="round-card">
+                <div class="round-num" id="intro-num">ROUND 1 / 10</div>
+                <h2 id="intro-name">Meadow Pond</h2>
+                <p class="round-sub" id="intro-sub"></p>
+                <div class="mod-list" id="intro-mods"></div>
+                <p class="intro-meta" id="intro-medal"></p>
+                <p class="intro-meta power-line" id="intro-power"></p>
+                <button id="intro-go" class="btn btn-big">CAST OFF →</button>
+            </div>
+        </section>
+
+        <!-- ══════════ ROUND SUMMARY ══════════ -->
+        <section id="screen-summary" class="screen hidden">
+            <div class="panel">
+                <h2 id="sum-title">Round Clear!</h2>
+                <div id="sum-body"></div>
+                <button id="btn-next" class="btn btn-big">NEXT WATERS →</button>
+            </div>
+        </section>
+
+        <!-- ══════════ END ══════════ -->
+        <section id="screen-end" class="screen hidden">
+            <div class="panel end-panel">
+                <div id="end-icon">🏆</div>
+                <h2 id="end-title"></h2>
+                <p class="round-sub" id="end-sub"></p>
+                <div id="end-stats" class="end-stats"></div>
+                <div class="row-center">
+                    <button id="btn-retry" class="btn btn-big">↻ NEW RUN</button>
+                    <button id="btn-menu" class="btn btn-wood">MENU</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════ UPGRADE DRAFT ══════════ -->
+        <section id="overlay-upgrades" class="overlay hidden">
+            <div class="up-box">
+                <h2 class="up-title">⚡ THE TIDE OFFERS…</h2>
+                <p class="up-sub">Choose one blessing</p>
+                <div id="up-cards" class="up-cards"></div>
+                <button id="up-reroll" class="btn btn-small">🎲 REROLL — 40🪙</button>
+            </div>
+        </section>
+
+        <!-- ══════════ PAUSE ══════════ -->
+        <section id="overlay-pause" class="overlay hidden">
+            <div class="panel">
+                <h2>⚓ Paused</h2>
+                <div class="row-center col">
+                    <button id="btn-resume" class="btn btn-big">RESUME</button>
+                    <button id="btn-quit" class="btn btn-wood">ABANDON RUN (bank coins)</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+    <script>
+        window.__SUPABASE_URL__ = 'https://yllgbrfuvaipvsoctlau.supabase.co';
+        window.__SUPABASE_ANON_KEY__ = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlsbGdicmZ1dmFpcHZzb2N0bGF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MjE2OTYsImV4cCI6MjEwMTM5NzY5Nn0.IG17w0uBLg6dDAhzinoGxCHty-zcYbxY8V0zUV4nQG4';
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/assets.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/fishing.js"></script>
+    <script src="js/upgrades.js"></script>
+    <script src="js/shop.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
